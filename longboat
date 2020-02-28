@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+$LOAD_PATH << './lib'
+
+require 'longboat'
+require 'longboat/jobs'
+#require 'longboat/server'
+
+Longboat::Metrics.collect!
+puts Longboat::Metrics
+#Longboat::Server.serve!
