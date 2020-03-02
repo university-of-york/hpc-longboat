@@ -17,9 +17,7 @@ module Longboat
     end
 
     def collect!
-      @jobs.each do |job|
-        job.run
-      end
+      @jobs.each(&:run)
     end
 
     def collect_every(time = 60, async = true)

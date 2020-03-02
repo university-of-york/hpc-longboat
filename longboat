@@ -11,7 +11,7 @@ jobs.load(collector)
 t = jobs.collect_every
 
 sleep 5
-puts collector.metrics
+puts collector.prometheus_metrics
 t.exit
 
 #Longboat::Server.serve!

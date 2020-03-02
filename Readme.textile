@@ -1,0 +1,23 @@
+h1. Longboat
+
+Longboat is a metric collection system. Intended for Viking, but theoretically generic.
+
+h2. Jobs
+
+Longboat will pick up all jobs in the lib/jobs directory. Each job consists of:
+
+* a file with a snake_case name, such as @my_job.rb@
+* containing a single class with a CamelCase name matching the file name, such as @MyJob@
+* with two methods:
+** @initialize@, which takes a single argument of the collector to @report!@ the metrics to
+** @run@, no arguments, which triggers a job run and metric report
+
+@Longboat::Collector#report!@ takes as arguments:
+
+# The name of the metric
+# The value of the metric
+# Optionally, as a final hash:
+#* @help@: The help string for the metric
+#* @type@: The Prometheus type of the metric
+#* @labels@: A hash containing the metric labels
+#* @timestamp@: The timestamp when the metric was collected, defaults to the time @report!@ was called.

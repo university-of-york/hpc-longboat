@@ -9,7 +9,7 @@ module Longboat
       @metrics[name][labels] = {value: value, timestamp: timestamp}
     end
 
-    def metrics
+    def prometheus_metrics
       res = ""
       @metrics.each do |name, metric|
         res << "#HELP #{name} #{metric[:help]}\n" unless metric[:help].nil?
