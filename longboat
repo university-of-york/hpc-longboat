@@ -2,7 +2,6 @@
 $LOAD_PATH << './lib'
 
 require 'longboat'
-#require 'longboat/server'
 
 collector = Longboat::Collector.new
 
@@ -10,8 +9,5 @@ jobs = Longboat::Jobs.new
 jobs.load(collector)
 t = jobs.collect_every
 
-sleep 5
-puts collector.prometheus_metrics
-t.exit
-
-#Longboat::Server.serve!
+require 'longboat/server'
+Longboat::Server.serve!(collector)
