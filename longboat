@@ -8,11 +8,10 @@ collector = Longboat::Collector.new
 
 jobs = Longboat::Jobs.new
 jobs.load(collector)
-jobs.collect_every
+t = jobs.collect_every
 
-loop do
-  sleep 30
-  puts collector.metrics
-  sleep 30
-end
+sleep 5
+puts collector.metrics
+t.exit
+
 #Longboat::Server.serve!

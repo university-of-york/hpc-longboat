@@ -4,13 +4,12 @@ module Longboat
       @metrics = {}
     end
 
-    def report!(name, value, help: nil, type: nil, labels: {})
+    def report!(name, value, help: nil, type: nil, labels: {}, timestamp: Time.now)
       @metrics[name] ||= {help: help, type: type}
-      @metrics[name][labels] = value
+      @metrics[name][labels] = {value: value, timestamp: timestamp}
     end
 
     def metrics
-      timestamp = (Time.now.to_f * 1000).to_i
       res = ""
       @metrics.each do |name, metric|
         res << "#HELP #{name} #{metric[:help]}\n" unless metric[:help].nil?
@@ -24,7 +23,7 @@ module Longboat
             labellist << "#{k}=\"#{v}\""
           end
           labellist = labellist.join(",")
-          res << "#{name}{#{labellist}} #{value} #{timestamp}\n"
+          res << "#{name}{#{labellist}} #{value[:value]} #{(value[:timestamp].to_f * 1000).to_i}\n"
         end
       end
       res
