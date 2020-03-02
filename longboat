@@ -2,12 +2,17 @@
 $LOAD_PATH << './lib'
 
 require 'longboat'
-require 'longboat/jobs/slurm_job_states'
 #require 'longboat/server'
 
 collector = Longboat::Collector.new
-Longboat::Jobs::SlurmJobStates.new(collector)
 
-collector.collect!
-puts collector.metrics
+jobs = Longboat::Jobs.new
+jobs.load(collector)
+jobs.collect_every
+
+loop do
+  sleep 30
+  puts collector.metrics
+  sleep 30
+end
 #Longboat::Server.serve!

@@ -2,7 +2,6 @@ module Longboat
   class Collector
     def initialize
       @metrics = {}
-      @jobs = []
     end
 
     def report!(name, value, help: nil, type: nil, labels: {})
@@ -29,16 +28,6 @@ module Longboat
         end
       end
       res
-    end
-
-    def register!(job)
-      @jobs << job
-    end
-
-    def collect!
-      @jobs.each do |job|
-        job.run
-      end
     end
   end
 end
