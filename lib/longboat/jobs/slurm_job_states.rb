@@ -1,7 +1,12 @@
 module Longboat
   module Jobs
-    class << self
-      def collect!
+    class SlurmJobStates
+      def initialize(collector)
+        @collector = collector
+        @collector.register!(self)
+      end
+
+      def run
         start_time = (Time.now - 15 * 60).strftime("%H:%M:%S")
         raw = `sacct -a -P -o State -S #{start_time}`.lines.map(&:strip)[1..-1]
 
@@ -12,8 +17,8 @@ module Longboat
         end
 
         tally.each do |state, number|
-          Longboat::Metrics.report!(
-            "longboat_slurm_job_state",
+          @collector.report!(
+            "longboat_slurm_job_states",
             number,
             help: "Number of jobs in each state",
             type: "gauge",
@@ -22,7 +27,5 @@ module Longboat
         end
       end
     end
-
-    Longboat::Metrics.register!(self)
   end
 end

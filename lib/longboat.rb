@@ -1,1 +1,1 @@
-require 'longboat/metrics'
+require 'longboat/collector'
