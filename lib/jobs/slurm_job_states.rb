@@ -1,10 +1,11 @@
 class SlurmJobStates
-  def initialize(collector)
+  def initialize(collector, config)
     @collector = collector
+    @interval = config[:collect_every]
   end
 
   def run
-    start_time = (Time.now - 60).strftime("%H:%M:%S")
+    start_time = (Time.now - @interval).strftime("%H:%M:%S")
     raw = `sacct -a -P -o State -S #{start_time}`.lines.map(&:strip)[1..-1]
 
     tally = Hash.new{0}

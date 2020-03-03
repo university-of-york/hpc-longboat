@@ -1,10 +1,12 @@
 module Longboat
   class Jobs
-    def initialize
+    def initialize(collector, config)
+      @collector = collector
       @jobs = []
+      @config = config
     end
 
-    def load(collector)
+    def load!
       Dir.entries("./lib/jobs/").each do |file|
         next if file =~ /^\./
 
@@ -12,7 +14,7 @@ module Longboat
         cname = reqname.split('_').map(&:capitalize).join
 
         require "jobs/#{reqname}"
-        @jobs << Kernel.const_get(cname).new(collector)
+        @jobs << Kernel.const_get(cname).new(@collector, job_config)
       end
     end
 
@@ -20,7 +22,7 @@ module Longboat
       @jobs.each(&:run)
     end
 
-    def collect_every(time = 60, async = true)
+    def collect_every(time = @config[:collect_every], async = true)
       if async
         Thread.new do
           loop do
@@ -34,6 +36,12 @@ module Longboat
           sleep(time)
         end
       end
+    end
+
+    private
+
+    def job_config
+      @config.slice(:collect_every)
     end
   end
 end

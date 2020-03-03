@@ -3,11 +3,14 @@ $LOAD_PATH << './lib'
 
 require 'longboat'
 
-collector = Longboat::Collector.new
+# Handle command line options
+config = Longboat::Config.parse!
 
-jobs = Longboat::Jobs.new
-jobs.load(collector)
+# Start collection
+collector = Longboat::Collector.new
+jobs = Longboat::Jobs.new(collector, config)
+jobs.load!
 t = jobs.collect_every
 
-require 'longboat/server'
-Longboat::Server.serve!(collector)
+# Serve metrics on HTTP
+Longboat::Server.serve!(collector, config)

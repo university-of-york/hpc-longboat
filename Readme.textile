@@ -9,7 +9,9 @@ Longboat will pick up all jobs in the lib/jobs directory. Each job consists of:
 * a file with a snake_case name, such as @my_job.rb@
 * containing a single class with a CamelCase name matching the file name, such as @MyJob@
 * with two methods:
-** @initialize@, which takes a single argument of the collector to @report!@ the metrics to
+** @initialize@, which takes two arguments of:
+*** the collector to @report!@ the metrics to, and
+*** a hash containing config relevant to jobs
 ** @run@, no arguments, which triggers a job run and metric report
 
 @Longboat::Collector#report!@ takes as arguments:
