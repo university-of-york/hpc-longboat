@@ -1,10 +1,12 @@
 module Longboat
   class Collector
-    def initialize
+    def initialize(config)
       @metrics = {}
+      @config = config
     end
 
     def report!(name, value, help: nil, type: nil, labels: {}, timestamp: Time.now)
+      name = "#{@config[:metric_prefix]}#{name}"
       @metrics[name] ||= {help: help, type: type}
       @metrics[name][labels] = {value: value, timestamp: timestamp}
     end

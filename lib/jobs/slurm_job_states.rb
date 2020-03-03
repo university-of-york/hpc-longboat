@@ -16,7 +16,7 @@ class SlurmJobStates
 
     tally.each do |state, number|
       @collector.report!(
-        "longboat_slurm_job_states",
+        "slurm_job_states",
         number,
         help: "Number of jobs in each state",
         type: "gauge",

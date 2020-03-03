@@ -41,7 +41,7 @@ module Longboat
     private
 
     def job_config
-      @config.slice(:collect_every)
+      @config.slice(:collect_every, :metric_prefix)
     end
   end
 end
