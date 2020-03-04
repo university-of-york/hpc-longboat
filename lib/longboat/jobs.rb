@@ -4,17 +4,19 @@ module Longboat
       @collector = collector
       @jobs = []
       @config = config
-    end
 
-    def load!
-      Dir.entries("./lib/jobs/").each do |file|
-        next if file =~ /^\./
+      @config[:jobs_path].each do |dir|
+        next unless Dir.exist?(dir)
 
-        reqname = File.basename(file, ".rb")
-        cname = reqname.split('_').map(&:capitalize).join
+        Dir.entries(dir).each do |file|
+          next if file =~ /^\./
 
-        require "jobs/#{reqname}"
-        @jobs << Kernel.const_get(cname).new(@collector, job_config)
+          reqname = File.basename(file, ".rb")
+          cname = reqname.split('_').map(&:capitalize).join
+
+          require "jobs/#{reqname}"
+          @jobs << Kernel.const_get(cname).new(@collector, job_config)
+        end
       end
     end
 

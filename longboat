@@ -9,7 +9,6 @@ config = Longboat::Config.parse!
 # Start collection
 collector = Longboat::Collector.new(config)
 jobs = Longboat::Jobs.new(collector, config)
-jobs.load!
 t = jobs.collect_every
 
 # Serve metrics on HTTP
