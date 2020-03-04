@@ -6,9 +6,20 @@ module Longboat
     end
 
     def report!(name, value, help: nil, type: nil, labels: {}, timestamp: Time.now)
-      name = "#{@config[:metric_prefix]}#{name}"
+      name = prefix(name)
+
       @metrics[name] ||= {help: help, type: type}
       @metrics[name][labels] = {value: value, timestamp: timestamp}
+    end
+
+    def redact!(name, labels: nil)
+      name = prefix(name)
+
+      if labels.nil?
+        @metrics.delete(name)
+      else
+        @metrics[name].delete(labels)
+      end
     end
 
     def prometheus_metrics
@@ -20,15 +31,23 @@ module Longboat
         metric.each do |labels, value|
           next if labels == :help
           next if labels == :type
+
           labellist = []
           labels.each do |k, v|
             labellist << "#{k}=\"#{v}\""
           end
           labellist = labellist.join(",")
+
           res << "#{name}{#{labellist}} #{value[:value]} #{(value[:timestamp].to_f * 1000).to_i}\n"
         end
       end
       res
+    end
+
+    private
+
+    def prefix(name)
+      "#{@config[:metric_prefix]}#{name}"
     end
   end
 end
