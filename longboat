@@ -8,8 +8,8 @@ config = Longboat::Config.parse!
 
 # Start collection
 collector = Longboat::Collector.new(config)
-jobs = Longboat::Jobs.new(collector, config)
-t = jobs.collect_every
+raiders = Longboat::Raiders.new(collector, config)
+t = raiders.raid_every
 
 # Serve metrics on HTTP
 Longboat::Server.serve!(collector, config)

@@ -1,11 +1,11 @@
 module Longboat
-  class Jobs
+  class Raiders
     def initialize(collector, config)
       @collector = collector
-      @jobs = []
+      @raiders = []
       @config = config
 
-      @config[:jobs_path].each do |dir|
+      @config[:raiders_path].each do |dir|
         next unless Dir.exist?(dir)
 
         Dir.entries(dir).each do |file|
@@ -14,27 +14,27 @@ module Longboat
           reqname = File.basename(file, ".rb")
           cname = reqname.split('_').map(&:capitalize).join
 
-          require "jobs/#{reqname}"
-          @jobs << Kernel.const_get(cname).new(@collector, job_config)
+          require "raiders/#{reqname}"
+          @raiders << Kernel.const_get(cname).new(@collector, raider_config)
         end
       end
     end
 
-    def collect!
-      @jobs.each(&:run)
+    def raid!
+      @raiders.each(&:raid)
     end
 
-    def collect_every(time = @config[:collect_every], async = true)
+    def raid_every(time = @config[:raid_every], async = true)
       if async
         Thread.new do
           loop do
-            collect!
+            raid!
             sleep(time)
           end
         end
       else
         loop do
-          collect!
+          raid!
           sleep(time)
         end
       end
@@ -42,8 +42,8 @@ module Longboat
 
     private
 
-    def job_config
-      @config.slice(:collect_every, :metric_prefix)
+    def raider_config
+      @config.slice(:raid_every, :metric_prefix)
     end
   end
 end

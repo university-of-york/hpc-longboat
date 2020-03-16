@@ -1,10 +1,10 @@
 class SlurmJobStates
   def initialize(collector, config)
     @collector = collector
-    @interval = config[:collect_every]
+    @interval = config[:raid_every]
   end
 
-  def run
+  def raid
     start_time = (Time.now - @interval).strftime("%H:%M:%S")
 
     # Get raw data from sacct,
