@@ -2,7 +2,7 @@ module Longboat
   class Raiders
     def initialize(collector, config)
       @collector = collector
-      @raiders = []
+      @raiders = {}
       @config = config
 
       @config[:raiders_path].each do |dir|
@@ -15,13 +15,26 @@ module Longboat
           cname = reqname.split('_').map(&:capitalize).join
 
           require "raiders/#{reqname}"
-          @raiders << Kernel.const_get(cname).new(@collector, raider_config)
+          @raiders[reqname] = Kernel.const_get(cname).new(@collector, raider_config)
         end
       end
     end
 
     def raid!
-      @raiders.each(&:raid)
+      @raiders.each do |name, raider|
+        start_time = Time.now
+        raider.raid
+        end_time = Time.now
+        time_taken = end_time - start_time
+
+        @collector.report!(
+          "longboat_meta_raider_runtime",
+          (time_taken.to_f * 1000).to_i,
+          help: "Time taken by a raider whilst raiding in ms",
+          type: "guage",
+          labels: {raider: name}
+        )
+      end
     end
 
     def raid_every(time = @config[:raid_every], async = true)

@@ -25,6 +25,7 @@ module Longboat
     def prometheus_metrics
       res = ""
       @metrics.each do |name, metric|
+        res << ?\n unless res.empty?
         res << "#HELP #{name} #{metric[:help]}\n" unless metric[:help].nil?
         res << "#TYPE #{name} #{metric[:type]}\n" unless metric[:type].nil?
 
