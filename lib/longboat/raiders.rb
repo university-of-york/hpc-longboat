@@ -9,12 +9,12 @@ module Longboat
         next unless Dir.exist?(dir)
 
         Dir.entries(dir).each do |file|
-          next if file =~ /^\./
+          next unless file =~ /\A(?!:[^.]).*[^_].*\.rb\Z/
 
           reqname = File.basename(file, ".rb")
           cname = reqname.split('_').map(&:capitalize).join
 
-          require "raiders/#{reqname}"
+          require "#{dir}/#{reqname}"
           @raiders[reqname] = Kernel.const_get(cname).new(@collector, raider_config)
         end
       end
