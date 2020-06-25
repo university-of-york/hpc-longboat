@@ -21,7 +21,6 @@ module Longboat
     end
 
     def raid!
-      puts "RAID"
       @raiders.each do |name, raider|
         @collector.begin!
 
@@ -42,6 +41,10 @@ module Longboat
           @collector.commit!
         rescue Exception => e
           @collector.abort!
+
+          $stderr.puts "[ERROR] Caught exception from raider: #{name}"
+          $stderr.puts "[ERROR] Aborted collector transaction"
+          $stderr.puts "[ERROR] Exception reads: \"#{e.message}\""
         end
       end
     end
