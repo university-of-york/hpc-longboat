@@ -21,19 +21,28 @@ module Longboat
     end
 
     def raid!
+      puts "RAID"
       @raiders.each do |name, raider|
-        start_time = Time.now
-        raider.raid
-        end_time = Time.now
-        time_taken = end_time - start_time
+        @collector.begin!
 
-        @collector.report!(
-          "longboat_meta_raider_runtime",
-          (time_taken.to_f * 1000).to_i,
-          help: "Time taken by a raider whilst raiding in ms",
-          type: "guage",
-          labels: {raider: name}
-        )
+        begin
+          start_time = Time.now
+          raider.raid
+          end_time = Time.now
+          time_taken = end_time - start_time
+
+          @collector.report!(
+            "longboat_meta_raider_runtime",
+            (time_taken.to_f * 1000).to_i,
+            help: "Time taken by a raider whilst raiding in ms",
+            type: "guage",
+            labels: {raider: name}
+          )
+
+          @collector.commit!
+        rescue Exception => e
+          @collector.abort!
+        end
       end
     end
 

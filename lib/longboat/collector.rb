@@ -1,25 +1,45 @@
 module Longboat
+  class CollectorTransactionError < Exception; end
+
   class Collector
     def initialize(config)
       @metrics = {}
       @config = config
+      @transaction = nil
     end
 
     def report!(name, value, help: nil, type: nil, labels: {}, timestamp: Time.now)
+      raise CollectorTransactionError if @tranaction.nil?
+
       name = prefix(name)
 
-      @metrics[name] ||= {help: help, type: type}
-      @metrics[name][labels] = {value: value, timestamp: timestamp}
+      @transaction[name] ||= {help: help, type: type}
+      @transaction[name][labels] = {value: value, timestamp: timestamp}
     end
 
     def redact!(name, labels: nil)
+      raise CollectorTransactionError if @tranaction.nil?
+
       name = prefix(name)
 
       if labels.nil?
-        @metrics.delete(name)
+        @transaction.delete(name)
       else
-        @metrics[name].delete(labels)
+        @transaction[name].delete(labels)
       end
+    end
+
+    def begin!
+      @transaction = clone_metrics
+    end
+
+    def abort!
+      @transaction = nil
+    end
+
+    def commit!
+      @metrics = @transaction
+      @transaction = nil
     end
 
     def prometheus_metrics
@@ -49,6 +69,24 @@ module Longboat
 
     def prefix(name)
       "#{@config[:metric_prefix]}#{name}"
+    end
+    
+    def clone_metrics
+      clone = {}
+
+      @metrics.each do |metric, attributes|
+        clone[metric] = {}
+        clone[metric][:help] = attributes[:help]
+        clone[metric][:type] = attributes[:type]
+
+        attributes.each do |labels, value|
+          next if [:help, :type].include?(labels)
+
+          clone[metric][labels.clone] = value.clone
+        end
+      end
+
+      clone
     end
   end
 end
