@@ -1,3 +1,5 @@
+source 'https://rubygems.org'
+
 # Command line option parsing
 gem 'optimist'
 
