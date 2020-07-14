@@ -44,7 +44,7 @@ module Longboat
 
           $stderr.puts "[ERROR] Caught exception from raider: #{name}"
           $stderr.puts "[ERROR] Aborted collector transaction"
-          $stderr.puts "[ERROR] Exception reads: \"#{e.message}\""
+          $stderr.puts "[ERROR] Backtrace reads: \"#{e.backtrace}\""
         end
       end
     end

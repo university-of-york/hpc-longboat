@@ -9,7 +9,7 @@ module Longboat
     end
 
     def report!(name, value, help: nil, type: nil, labels: {}, timestamp: Time.now)
-      raise CollectorTransactionError if @tranaction.nil?
+      raise CollectorTransactionError if @transaction.nil?
 
       name = prefix(name)
 
@@ -18,7 +18,7 @@ module Longboat
     end
 
     def redact!(name, labels: nil)
-      raise CollectorTransactionError if @tranaction.nil?
+      raise CollectorTransactionError if @transaction.nil?
 
       name = prefix(name)
 
