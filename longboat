@@ -10,6 +10,12 @@ config = Longboat::Config.parse!
 collector = Longboat::Collector.new(config)
 raiders = Longboat::Raiders.new(collector, config)
 
+unless ARGV.empty?
+  puts "Extraneous arguments:"
+  p ARGV
+  exit 1
+end
+
 if config.test
   # We're in test mode, output metrics to stdout once and quit
   raiders.raid!
