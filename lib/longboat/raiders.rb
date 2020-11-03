@@ -15,9 +15,7 @@ module Longboat
           cname = reqname.split('_').map(&:capitalize).join
 
           require "#{dir}/#{reqname}"
-          raider = Kernel.const_get(cname).new(@collector, raider_config)
-          raider.configure! if raider.respond_to?(:configure!)
-          @raiders[reqname] = raider
+          @raiders[reqname] = Kernel.const_get(cname).new(@collector, raider_config)
         end
       end
     end
