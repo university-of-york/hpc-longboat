@@ -9,7 +9,13 @@ config = Longboat::Config.parse!
 # Start collection
 collector = Longboat::Collector.new(config)
 raiders = Longboat::Raiders.new(collector, config)
-t = raiders.raid_every
 
-# Serve metrics on HTTP
-Longboat::Server.serve!(collector, config)
+if config.test
+  # We're in test mode, output metrics to stdout once and quit
+  raiders.raid!
+  puts collector.prometheus_metrics
+else
+  # Serve metrics on HTTP forever
+  raiders.raid_every
+  Longboat::Server.serve!(collector, config)
+end
