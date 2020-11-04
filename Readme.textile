@@ -2,11 +2,50 @@ h1. Longboat
 
 Longboat is a metric collection system. Intended for Viking, but theoretically generic.
 
+It aggregates metrics collected by _raiders_, which are individual Ruby classes intended to gather and munge data from any source. It then present the data in Prometheus Exposition Format at a HTTP endpoint.
+
+h2. Dependencies
+
+Longboat depends on the @optimist@ and @sinatra@ gems (and optionally @thin@). You can install with gem or bundler in the usual ways.
+
+bc. $ bundle install
+
+h2. Usage
+
+h3. Defaults
+
+Longboat has some sensible defaults, so to get started pop your raiders in @lib/raiders@ and run:
+
+bc. $ ./longboat
+== Sinatra (v2.1.0) has taken the stage on 8564 for production with backup from Thin
+Thin web server (v1.7.2 codename Bachmanity)
+Maximum connections set to 1024
+Listening on 127.0.0.1:8564, CTRL+C to stop
+
+h3. Test
+
+When testing new raiders, use the @--test@ flag. Rather than starting a web server and entering the raid loop, this will only run the raiders once then spit out the metrics on stdout:
+
+bc. $ ./longboat --test
+#HELP longboat_a_value A value specified at runtime
+#TYPE longboat_a_value gauge
+longboat_a_value{} 4 1604490345980
+
+h3. Raider paths
+
+Use @--raider-path@ to append a directory to the raider path. You can call this multiple times:
+
+bc. $ ./longboat -a /some/global/raiders -a /some/more/raiders -a even_more_raiders
+
 h2. Raiders
 
 Raiders go out, raid things, and return to the longboat with metrics for the collector.
 
-Longboat will pick up all raiders in the lib/raiders directory. Each raider consists of:
+Longboat will pick up all raiders in the @lib/raiders@ directoryby default.
+
+h3. Raider structure
+
+Each raider consists of:
 
 * a file with a snake_case name, such as @my_raider.rb@
 * containing a single class with a CamelCase name matching the file name, such as @MyRaider@
@@ -25,3 +64,54 @@ Longboat will pick up all raiders in the lib/raiders directory. Each raider cons
 #* @type@: The Prometheus type of the metric
 #* @labels@: A hash containing the metric labels
 #* @timestamp@: The timestamp when the metric was collected, defaults to the time @report!@ was called.
+
+h4. Example
+
+bc.. class Test
+  def initialize(collector, config)
+    @collector = collector
+    @config = config
+  end
+
+  def raid
+    # Do something useful
+    val = 4
+
+    # Clean up any previously reported metrics
+    # to prevent stale labelsets
+    @collector.redact!("value")
+
+    # Report new metrics
+    @collector.report!(
+      "value",
+      val,
+      help: "A fixed value",
+      type: "gauge",
+      labels: {
+        subvalue: 3
+      }
+    )
+  end
+end
+
+h3. Raider config
+
+Longboat offers the @Longboat::Config.for_raider@ primitive to allow raiders to get command line arguments at runtime. It takes a block which is passed wholesale to @Optimist::Parser.new@, and returns a hash of parsed arguments.
+
+Consider the following raider:
+
+bc. class MyRaider
+  def initialize(collector, config)
+    @my_config = Longboat::Config.for_raider do
+      opt :myraider_an_argument, "An argument for myraider"
+    end
+  end
+  ...
+
+After calling longboat thusly:
+
+bc. $ ./longboat --myraider-an-argument
+
+The <code>@my_config</code> hash will look like:
+
+bc. {:myraider_an_argument => true, :myraider_an_argument_given => true}
