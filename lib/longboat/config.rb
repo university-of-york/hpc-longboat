@@ -33,7 +33,9 @@ module Longboat
     def self.for_raider(&block)
       parser = Optimist::Parser.new(&block)
       parser.ignore_invalid_options = true
-      parser.parse
+      opts = parser.parse
+      opts.delete(:help)
+      opts
     end
   end
 end
