@@ -9,7 +9,7 @@ module Longboat
         next unless Dir.exist?(dir)
 
         Dir.entries(dir).each do |file|
-          next unless file =~ /\A(?!:[^.]).*[^_].*\.rb\Z/
+          next unless file =~ /\A(?![._])[a-zA-Z0-9]+(?:_[a-zA-Z0-9]+)*\.rb\Z/
 
           reqname = File.basename(file, ".rb")
           cname = reqname.split('_').map(&:capitalize).join
