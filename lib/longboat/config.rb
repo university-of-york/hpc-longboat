@@ -27,15 +27,29 @@ module Longboat
         exit
       rescue Optimist::VersionNeeded
         exit
+      rescue Optimist::CommandlineError => e
+        puts "Command line error:"
+        puts e.message
+        puts
+        puts "Try --help, or refer to raider documentation."
+        exit 1
       end
     end
 
     def self.for_raider(&block)
       parser = Optimist::Parser.new(&block)
       parser.ignore_invalid_options = true
-      opts = parser.parse
-      opts.delete(:help)
-      opts
+      begin
+        opts = parser.parse
+        opts.delete(:help)
+        opts
+      rescue Optimist::CommandlineError => e
+        puts "Command line error:"
+        puts e.message
+        puts
+        puts "Try --help, or refer to raider documentation."
+        exit 1
+      end
     end
   end
 end

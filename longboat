@@ -13,6 +13,7 @@ raiders = Longboat::Raiders.new(collector, config)
 unless ARGV.empty?
   puts "Extraneous or unrecognised arguments:"
   puts "    " + ARGV.join(" ")
+  puts
   puts "Try --help, or refer to raider documentation."
   exit 1
 end
