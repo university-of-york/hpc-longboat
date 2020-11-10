@@ -41,7 +41,7 @@ h2. Raiders
 
 Raiders go out, raid things, and return to the longboat with metrics for the collector.
 
-Longboat will pick up all raiders in the @lib/raiders@ directoryby default.
+Longboat will pick up all raiders in the @lib/raiders@ directory by default.
 
 h3. Raider structure
 
@@ -96,7 +96,7 @@ end
 
 h3. Raider config
 
-Longboat offers the @Longboat::Config.for_raider@ primitive to allow raiders to get command line arguments at runtime. It takes a block which is passed wholesale to @Optimist::Parser.new@, and returns a hash of parsed arguments.
+Longboat offers the @Longboat::Config.for_raider@ primitive to allow raiders to get command line arguments at runtime. It takes a block which is passed wholesale to @Optimist::Parser.new@, and returns a hash of parsed arguments. For more information see the "documentation":https://github.com/ManageIQ/optimist "for":https://www.manageiq.org/optimist/ "Optimist":https://github.com/ManageIQ/optimist/wiki.
 
 Consider the following raider:
 
@@ -115,3 +115,5 @@ bc. $ ./longboat --myraider-an-argument
 The <code>@my_config</code> hash will look like:
 
 bc. {:myraider_an_argument => true, :myraider_an_argument_given => true}
+
+Be aware that there's no namespacing between raider arguments, so it's recommended that you prefix your argument with the raider's name, such as @--myraider-an-argument@. Also be aware that the automatic short-options are very likely to clash horribly, so try to avoid using these.
