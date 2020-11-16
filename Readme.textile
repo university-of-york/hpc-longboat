@@ -79,35 +79,6 @@ For summaries, the value is a hash containing:
 * @count@: The total number of observations
 * @sum@: The sum of all observations
 
-h4. Example
-
-bc.. class Test
-  def initialize(collector, config)
-    @collector = collector
-    @config = config
-  end
-
-  def raid
-    # Do something useful
-    val = 4
-
-    # Clean up any previously reported metrics
-    # to prevent stale labelsets
-    @collector.redact!("value")
-
-    # Report new metrics
-    @collector.report!(
-      "value",
-      val,
-      help: "A fixed value",
-      type: "gauge",
-      labels: {
-        subvalue: 3
-      }
-    )
-  end
-end
-
 h3. Raider config
 
 Longboat offers the @Longboat::Config.for_raider@ primitive to allow raiders to get command line arguments at runtime. It takes a block which is passed wholesale to @Optimist::Parser.new@, and returns a hash of parsed arguments. For more information see the "documentation":https://github.com/ManageIQ/optimist "for":https://www.manageiq.org/optimist/ "Optimist":https://github.com/ManageIQ/optimist/wiki.
@@ -130,4 +101,4 @@ The <code>@my_config</code> hash will look like:
 
 bc. {:myraider_an_argument => true, :myraider_an_argument_given => true}
 
-Be aware that there's no namespacing between raider arguments, so it's recommended that you prefix your argument with the raider's name, such as @--myraider-an-argument@. Also be aware that the automatic short-options are very likely to clash horribly, so try to avoid using these.
+Be aware that there's no namespacing between raider arguments, so it's recommended that you prefix your argument with the raider's name, such as @--myraider-an-argument@. Also be aware that the automatic short-options are very likely to clash horribly, so try to avoid using these. Finally There is presently no way to get help about raider arguments.
