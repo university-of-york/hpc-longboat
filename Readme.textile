@@ -43,6 +43,8 @@ Raiders go out, raid things, and return to the longboat with metrics for the col
 
 Longboat will pick up all raiders in the @lib/raiders@ directory by default.
 
+There are some example raiders in @examples@.
+
 h3. Raider structure
 
 Each raider consists of:
@@ -101,4 +103,4 @@ The <code>@my_config</code> hash will look like:
 
 bc. {:myraider_an_argument => true, :myraider_an_argument_given => true}
 
-Be aware that there's no namespacing between raider arguments, so it's recommended that you prefix your argument with the raider's name, such as @--myraider-an-argument@. Also be aware that the automatic short-options are very likely to clash horribly, so try to avoid using these. Finally There is presently no way to get help about raider arguments.
+Be aware that there's no namespacing between raider arguments, so it's recommended that you prefix your argument with the raider's name, such as @--myraider-an-argument@. Also be aware that the automatic short-options are very likely to clash horribly, so try to avoid using these. Finally, there is presently no way to get help about raider arguments.
