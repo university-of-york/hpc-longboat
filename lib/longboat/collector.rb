@@ -46,26 +46,80 @@ module Longboat
       res = ""
       @metrics.each do |name, metric|
         res << ?\n unless res.empty?
+
         res << "#HELP #{name} #{metric[:help]}\n" unless metric[:help].nil?
         res << "#TYPE #{name} #{metric[:type]}\n" unless metric[:type].nil?
 
-        metric.each do |labels, value|
-          next if labels == :help
-          next if labels == :type
-
-          labellist = []
-          labels.each do |k, v|
-            labellist << "#{k}=\"#{v}\""
+        case metric[:type]
+        when "gauge", "counter"
+          metric.each do |labelset, value|
+            next if labelset == :help
+            next if labelset == :type
+            res << stringify_gaugecounter(name, labelset, value[:value], value[:timestamp])
           end
-          labellist = labellist.join(",")
-
-          res << "#{name}{#{labellist}} #{value[:value]} #{(value[:timestamp].to_f * 1000).to_i}\n"
+        when "histogram"
+          metric.each do |labelset, value|
+            next if labelset == :help
+            next if labelset == :type
+            res << stringify_histogram(name, labelset, value[:value], value[:timestamp])
+          end
+        when "summary"
+          metric.each do |labelset, value|
+            next if labelset == :help
+            next if labelset == :type
+            res << stringify_summary(name, labelset, value[:value], value[:timestamp])
+          end
         end
       end
+
       res
     end
 
     private
+
+    def stringify_gaugecounter(name, labelset, value, timestamp)
+      labels = prometheus_labels(labelset)
+      timestamp = (timestamp.to_f * 1000).to_i
+
+      "#{name}{#{labels}} #{value} #{timestamp}\n"
+    end
+
+    def stringify_histogram(name, labelset, data, timestamp)
+      res = ""
+
+      data[:buckets].each do |bkt, cnt|
+        res << stringify_gaugecounter("#{name}_bucket", labelset.merge({le: bkt.to_s}), cnt, timestamp)
+      end
+
+      res << stringify_gaugecounter("#{name}_bucket", labelset.merge({le: "+Inf"}), data[:count], timestamp)
+      res << stringify_gaugecounter("#{name}_count", labelset, data[:count], timestamp)
+      res << stringify_gaugecounter("#{name}_sum", labelset, data[:sum], timestamp)
+      
+      res
+    end
+
+    def stringify_summary(name, labelset, data, timestamp)
+      res = ""
+
+      data[:quantiles].each do |qtl, val|
+        res << stringify_gaugecounter(name, labelset.merge({quantile: qtl.to_s}), val, timestamp)
+      end
+
+      res << stringify_gaugecounter("#{name}_count", labelset, data[:count], timestamp)
+      res << stringify_gaugecounter("#{name}_sum", labelset, data[:sum], timestamp)
+      
+      res
+    end
+
+    def prometheus_labels(labelset)
+      labellist = []
+
+      labelset.each do |k, v|
+        labellist << "#{k}=\"#{v}\""
+      end
+
+      labellist.join(",")
+    end
 
     def prefix(name)
       "#{@config[:metric_prefix]}#{name}"

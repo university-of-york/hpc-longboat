@@ -65,6 +65,20 @@ Each raider consists of:
 #* @labels@: A hash containing the metric labels
 #* @timestamp@: The timestamp when the metric was collected, defaults to the time @report!@ was called.
 
+For gauges and counters, the value is simply the vale of the metric.
+
+For histograms, the value is a hash containing:
+
+* @buckets@: A hash mapping the upper bound to the number of observations in the bucket
+* @count@: The total number of observations
+* @sum@: The sum of all observations
+
+For summaries, the value is a hash containing:
+
+* @quantiles@: A hash mapping the quantile to the value
+* @count@: The total number of observations
+* @sum@: The sum of all observations
+
 h4. Example
 
 bc.. class Test
