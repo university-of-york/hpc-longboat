@@ -34,7 +34,7 @@ module Longboat
             "longboat_meta_raider_runtime",
             (time_taken.to_f * 1000).to_i,
             help: "Time taken by a raider whilst raiding in ms",
-            type: "guage",
+            type: "gauge",
             labels: {raider: name}
           )
 
@@ -43,6 +43,7 @@ module Longboat
           @collector.abort!
 
           $stderr.puts "[ERROR] Caught exception from raider: #{name}"
+          $stderr.puts "[ERROR] Exception reads: #{e.message}"
           $stderr.puts "[ERROR] Aborted collector transaction"
           $stderr.puts "[ERROR] Backtrace reads: \"#{e.backtrace}\""
         end
